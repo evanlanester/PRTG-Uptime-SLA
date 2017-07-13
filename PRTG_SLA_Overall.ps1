@@ -12,7 +12,7 @@ $ssl=$false #$true=https | $false=http
 $prtgPort="80"
 $prtgServer="127.0.0.1"
 $prtgUsername="prtgadmin"
-$prtgPasshash="1633323351" #Get your Passhash @ http://yourserver/api/getpasshash.htm?username=myuser&password=mypassword
+$prtgPasshash="1234567891" #Get your Passhash @ http://yourserver/api/getpasshash.htm?username=myuser&password=mypassword
 ###User Configs End
 
  add-type @"
