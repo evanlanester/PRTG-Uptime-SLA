@@ -1,15 +1,18 @@
-###Written by: Evan Lane###
-###  January 20th 2017  ###
-###    Version: 1.2     ###
-###Updated: May 2nd 2017###
+### Written by: Evan Lane ###
+###   January 20th 2017   ###
+###     Version: 1.5      ###
+###Updated: July 13th 2017###
 #
 # PRTG Powershell Script to monitor the average overall uptime of all sensors.
 # Please install in %PRTG Install%\custom sensors\powershell
 #
-###User Configs
-$prtgServer = "https://localhost:4443"
-$prtgUsername = "username"
-$prtgPasshash = "passhash"
+
+###User Config
+$ssl=$false #$true=https | $false=http
+$prtgPort="80"
+$prtgServer="127.0.0.1"
+$prtgUsername="prtgadmin"
+$prtgPasshash="1633323351" #Get your Passhash @ http://yourserver/api/getpasshash.htm?username=myuser&password=mypassword
 ###User Configs End
 
  add-type @"
@@ -23,16 +26,27 @@ $prtgPasshash = "passhash"
         }
     }
 "@
-
 [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
+
+if ($ssl -eq $true){
+    $hyperText="https://"
+}
+Else{
+    $hyperText="http://"
+}
+
 ###Grab all Sensor IDs from List###
-$apiurl="$prtgServer/api/table.xml?id=0&content=sensors&columns=objid&username=$prtgUsername&passhash=$prtgPasshash"
+if ($port -eq $null){
+    $apiurl="$hyperText"+$prtgServer+":"+$port+"/api/table.xml?id=0&content=sensors&columns=objid&username=$prtgUsername&passhash=$prtgPasshash"
+}Else{
+    $apiurl="$hyperText$prtgServer/api/table.xml?id=0&content=sensors&columns=objid&username=$prtgUsername&passhash=$prtgPasshash"
+}
 [xml]$ini = (new-object System.Net.WebClient).downloadstring($apiurl)
 ###Declare Array to put all uptimes into at end of Foreach###
 $target = @()
 
 $ini.sensors.item | foreach {
-    $sensorapiurl="$prtgServer/api/getsensordetails.xml?id="+$_.objid+"&username=$prtgUsername&passhash=$prtgPasshash"
+    $sensorapiurl="$hyperText$prtgServer/api/getsensordetails.xml?id="+$_.objid+"&username=$prtgUsername&passhash=$prtgPasshash"
     [xml]$result = (new-object System.Net.WebClient).downloadstring($sensorapiurl)
     $node="uptime"
     ###Remove String Chars from Uptime###
