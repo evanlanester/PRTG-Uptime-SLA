@@ -12,11 +12,11 @@ I recently split off the original script to create a Daily and Weekly version of
 
 ## How-To & Guide
 1. How to Install the Script into your PRTG:
-⋅⋅⋅ Navigate to the C:\Program Files (x86)\PRTG Network Monitor\Custom Sensors\EXEXML\ and place the script here.
+⋅⋅⋅Navigate to the C:\Program Files (x86)\PRTG Network Monitor\Custom Sensors\EXEXML\ and place the script here.
 2. Configure the script for your PRTG Server.
-⋅⋅⋅ You only have to edit the User Config portion.
+⋅⋅⋅You only have to edit the User Config portion.
 ⋅⋅⋅**NOTE:** If using Powershell ISE to edit, you will want to "run as admin" so you are able to save the script in this directory.
 3. How to setup the Sensor:
-⋅⋅⋅ Create a Group/Device, set the IPv4 address of the device as: **127.0.0.1**
-⋅⋅⋅ Add a **EXEXML Advanced** Sensor and choose from the Drop down, the script you placed earlier.
-⋅⋅⋅ **NOTE:** You will want to set the Scanning Interval according to the Table above.
+⋅⋅⋅Create a Group/Device, set the IPv4 address of the device as: **127.0.0.1**
+⋅⋅⋅Add a **EXEXML Advanced** Sensor and choose from the Drop down, the script you placed earlier.
+⋅⋅⋅**NOTE:** You will want to set the Scanning Interval according to the Table above.
