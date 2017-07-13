@@ -52,7 +52,7 @@ if ($port -eq $null){
 $target = @()
 
 $ini.sensors.item | foreach {
-    $sensorapiurl= $url+"/api/historicdata.xml?id="+$_.objid+"&avg=43200&sdate="+$sdate+"&edate="+$edate+"&username="+$prtgUser+"&passhash="+$prtgPH
+    $sensorapiurl= "$hyperText"+$prtgServer+":"+$port+"/api/historicdata.xml?id="+$_.objid+"&avg=43200&sdate="+$sdate+"&edate="+$edate+"&username=$prtgUsername&passhash=$prtgPasshash"
     [xml]$result = (new-object System.Net.WebClient).downloadstring($sensorapiurl)
 
     $result.histdata.item | foreach{
