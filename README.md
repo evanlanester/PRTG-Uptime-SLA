@@ -6,9 +6,9 @@ I recently split off the original script to create a Daily and Weekly version of
 ## Quick Overview of the Scripts Available 
 | Versions        | Description | Recommended Scanning Internval |
 |-----------------|:-----------:|:-------------------------------|
-| [PRTG_SLA_Overall.ps1](https://github.com/evanlanester/PRTG-Uptime-SLA/blob/master/PRTG_SLA_Overall.ps1) | Averages the uptime since the creation for each Sensor |  |
-| [PRTG_SLA_Daily.ps1](https://github.com/evanlanester/PRTG-Uptime-SLA/blob/master/PRTG_SLA_Daily_v3.ps1) | Averages the uptime of the last 24 Hours for each Sensor |  |
-| [PRTG_SLA_Weekly.ps1](https://github.com/evanlanester/PRTG-Uptime-SLA/blob/master/PRTG_SLA_Weekly_v3.ps1) | Averages the uptime of the last 7 Days for each Sensor |  |
+| [PRTG_SLA_Overall.ps1](https://github.com/evanlanester/PRTG-Uptime-SLA/blob/master/PRTG_SLA_Overall.ps1) | Averages the uptime since the creation for each Sensor | > 10 Minutes |
+| [PRTG_SLA_Daily.ps1](https://github.com/evanlanester/PRTG-Uptime-SLA/blob/master/PRTG_SLA_Daily_v3.ps1) | Averages the uptime of the last 24 Hours for each Sensor | > 10 Minutes |
+| [PRTG_SLA_Weekly.ps1](https://github.com/evanlanester/PRTG-Uptime-SLA/blob/master/PRTG_SLA_Weekly_v3.ps1) | Averages the uptime of the last 7 Days for each Sensor | > 10 Minutes |
 
 ## How-To & Guide
 1. How to Install the Script into your PRTG:
