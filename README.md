@@ -21,5 +21,5 @@ I recently split off the original script to create a Daily and Weekly version of
   * Add a **[EXE/Script Advanced](https://www.paessler.com/manuals/prtg/exe_script_advanced_sensor)** Sensor and choose from the Drop down, the script you placed earlier.
   * **NOTE:** You will want to set the Scanning Interval according to the Table above.
 
-##Additional
+## Additional
 My script is now posted and available from PRTG's Script World: [Here](https://www.paessler.com/script-world/all/all/all?stats=all&fulltext=SLA&newOnly=false&scroll=342&key=1529760999307)
