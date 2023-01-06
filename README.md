@@ -1,3 +1,8 @@
+### This Project is being reworked!
+
+I am so sorry for the lack of support and updates. I will be reviewing this and doing a significant overhaul to this project.
+
+
 # PRTG Uptime SLA
 [PRTG Network Monitor](https://www.paessler.com/prtg) doesn't support any kind of System Uptime Sensors by Default, so I created the following three scripts to provide you with the Average Uptime of all sensors in your PRTG Network Monitor Deployment. 
 
