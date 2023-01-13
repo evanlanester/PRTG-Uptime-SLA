@@ -1,6 +1,5 @@
 #New-PRTGAPI.ps1
-Function New-PRTGAPI {
-    <#
+<#
     .SYNOPSIS
         Creates a file containing the necessary environment variables for interfacing
         with PRTG's API.
@@ -40,88 +39,127 @@ Function New-PRTGAPI {
         Author:  Evan Lane
         Website: https://evanlane.me
         GitHub: https://github.com/evanlanester
-    #>
+#>
+Function New-PRTGAPI {
+
+param (
+    [Parameter(Mandatory=$false)]
+    [Boolean]$ssl = 1,
+    [Parameter(Mandatory=$false)]
+    [String]$prtgPort = "443",
+    [Parameter(Mandatory=$false)]
+    [String]$prtgServer = "127.0.0.1",
+    [Parameter(Mandatory=$true)]
+    [String]$prtgUsername,
+    [Parameter(Mandatory=$true)]
+    [SecureString]$prtgPassword
+)
+
+#region NestedFunctions
+#ConvertFrom-SecureString-AsPlainText - For Legacy Powershell Support.
+Function ConvertFrom-SecureString-AsPlainText {
     param (
-        [Parameter(Mandatory=$false)]
-        [Boolean]$ssl = 1,
-        [Parameter(Mandatory=$false)]
-        [String]$prtgPort = "443",
-        [Parameter(Mandatory=$false)]
-        [String]$prtgServer = "127.0.0.1",
-        [Parameter(Mandatory=$true)]
-        [String]$prtgUsername,
-        [Parameter(Mandatory=$true)]
-        [SecureString]$prtgPassword
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true
+        )]
+        [SecureString]$SecureString
     )
-    
-    #region NestedFunctions
-    #ConvertFrom-SecureString-AsPlainText - For Legacy Powershell Support.
-    Function ConvertFrom-SecureString-AsPlainText {
-        param (
-            [Parameter(
-                Mandatory = $true,
-                ValueFromPipeline = $true
-            )]
-            [SecureString]$SecureString
-        )
-        $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecureString)
-        $PlainTextString = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
-        $PlainTextString
-    }
-    
-    #Allow self-signed or unsigned Certs
-    Function AcceptTLSCerts {
-    add-type @"
-        using System.Net;
-        using System.Security.Cryptography.X509Certificates;
-        public class TrustAllCertsPolicy : ICertificatePolicy {
-            public bool CheckValidationResult(
-                ServicePoint srvPoint, X509Certificate certificate,
-                WebRequest request, int certificateProblem) {
-                return true;
-            }
+    $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecureString)
+    $PlainTextString = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+    $PlainTextString
+}
+
+#Allow self-signed or unsigned Certs
+Function AcceptTLSCerts {
+add-type @"
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    public class TrustAllCertsPolicy : ICertificatePolicy {
+        public bool CheckValidationResult(
+            ServicePoint srvPoint, X509Certificate certificate,
+            WebRequest request, int certificateProblem) {
+            return true;
         }
-"@
-    [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
-    }
-    #endregion
-    AcceptTLSCerts
-    
-    ### Change HTTP based on whether SSL is enabled.
-    switch ($ssl) {
-        $true {$hyperText="https://"}
-        $false {$hyperText="http://"}
-    }
-    
-    ### Change URL for API call, based on Port.
-    if (($port -ne "443") -or ($port -ne "80")) {
-        $APIRoot="$hyperText"+"$prtgServer"+":"+$port+"/api/"
-    } else {
-        $APIRoot="$hyperText"+"$prtgServer"+"/api/"
-    }
-    
-    #https://127.0.0.1/controls/apikeys.htm?id=100&targeturl=/edituser.htm?id=100%26tabid=5
-    
-    ### Convert Password to Clear text to request passhash
-    [string]$prtgPassword = ConvertFrom-SecureString-AsPlainText -SecureString $prtgPassword
-    $APICall = $APIRoot+"getpasshash.htm?username=$prtgUsername&password=$prtgPassword"
-    $prtgPassword = $null # Clearing Cleartext password.
-    $prtgPasshash = (new-object System.Net.WebClient).downloadstring($APICall)
-    
-    ### Format Environment Variables
-    $EnvironmentVariables = @"
-    {
-        "SSL":"$ssl",
-        "PORT":"$prtgPort",
-        "SERVER":"$prtgServer",
-        "USERNAME":"$prtgUsername",
-        "PASSHASH":"$prtgPasshash"
     }
 "@
-    
-    ### Output JSON formatted environment variables
-    $EnvironmentVariables | Out-File -FilePath "${ENV:ProgramFiles(x86)}\PRTG Network Monitor\Custom Sensors\prtgapi.json"
-    }
-    
-    # Run Function.
-    New-PRTGAPI
+[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
+}
+#endregion
+AcceptTLSCerts
+
+
+### Change HTTP based on whether SSL is enabled.
+switch ($ssl) {
+    $true {$hyperText="https://"}
+    $false {$hyperText="http://"}
+}
+
+### Change URL for API call, based on Port.
+if (($port -ne "443") -or ($port -ne "80")) {
+    $APIRoot="$hyperText"+"$prtgServer"+":"+$port+"/api/v2/"
+} else {
+    $APIRoot="$hyperText"+"$prtgServer"+"/api/v2/"
+}
+
+### Convert Password to Clear text to request passhash
+[string]$prtgPassword = ConvertFrom-SecureString-AsPlainText -SecureString $prtgPassword
+
+$APICall = $APIRoot+"session"
+
+$JSONBody = @"
+{
+  "username": "$prtgUsername",
+  "password": "$prtgPassword"
+}
+"@
+
+$APIResponse = (New-Object System.Net.Webclient).UploadString($APICall, $JSONBody)
+}
+
+Function New-Session-PRTGAPIv2 {
+### Change HTTP based on whether SSL is enabled.
+switch ($ssl) {
+    $true {$hyperText="https://"}
+    $false {$hyperText="http://"}
+}
+
+### Change URL for API call, based on Port.
+if (($port -ne "443") -or ($port -ne "80")) {
+    $APIRoot="$hyperText"+"$prtgServer"+":"+$port+"/api/v2/"
+} else {
+    $APIRoot="$hyperText"+"$prtgServer"+"/api/v2/"
+}
+
+### Convert Password to Clear text to request passhash
+[string]$prtgPassword = ConvertFrom-SecureString-AsPlainText -SecureString $prtgPassword
+
+$APICall = $APIRoot+"session"
+
+$JSONBody = @"
+{
+  "username": "$prtgUsername",
+  "password": "$prtgPassword"
+}
+"@
+
+$APIResponse = (New-Object System.Net.Webclient).UploadString($APICall, $JSONBody)
+}
+
+Function Stop-Session-PRTGAPIv2 {
+### Change HTTP based on whether SSL is enabled.
+switch ($ssl) {
+    $true {$hyperText="https://"}
+    $false {$hyperText="http://"}
+}
+
+### Change URL for API call, based on Port.
+if (($port -ne "443") -or ($port -ne "80")) {
+    $APIRoot="$hyperText"+"$prtgServer"+":"+$port+"/api/v2/"
+} else {
+    $APIRoot="$hyperText"+"$prtgServer"+"/api/v2/"
+}
+
+$APICall = $APIRoot+"session"
+$APIResponse = (New-Object System.Net.HttpWebRequest).Method($APICall, "DELETE")
+}
